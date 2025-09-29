@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CommentDto {
 
@@ -41,5 +42,29 @@ public class CommentDto {
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
         private MemberDto.MemberResponse memberResponse;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ChildCommentResponse{
+        private long commentId;
+        private long parentCommentId;
+        private String content;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
+        private MemberDto.MemberResponse memberResponse;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ParentCommentResponse{
+        private long commentId;
+        private String content;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
+        private MemberDto.MemberResponse memberResponse;
+        private List<ChildCommentResponse> childCommentResponses;
     }
 }
