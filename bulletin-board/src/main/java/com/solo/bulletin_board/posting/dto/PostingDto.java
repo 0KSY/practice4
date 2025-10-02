@@ -49,6 +49,7 @@ public class PostingDto {
         private String title;
         private String content;
         private int viewCount;
+        private int likeCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
         private MemberDto.MemberResponse memberResponse;
@@ -63,6 +64,7 @@ public class PostingDto {
         private long postingId;
         private String title;
         private int viewCount;
+        private int likeCount;
         private int commentCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
