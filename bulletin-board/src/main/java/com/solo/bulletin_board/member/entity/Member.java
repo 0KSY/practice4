@@ -24,8 +24,13 @@ public class Member {
     @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
+    private String password;
+
     @Column(nullable = false, unique = true)
     private String nickname;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Posting> postings = new ArrayList<>();
