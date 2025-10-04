@@ -1,9 +1,16 @@
 package com.solo.bulletin_board.auth.config;
 
+import com.solo.bulletin_board.auth.filter.JwtAuthenticationFilter;
+import com.solo.bulletin_board.auth.handler.CustomAuthenticationFailureHandler;
+import com.solo.bulletin_board.auth.handler.CustomAuthenticationSuccessHandler;
+import com.solo.bulletin_board.auth.jwt.JwtTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +24,12 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfiguration {
 
+    private final JwtTokenizer jwtTokenizer;
+
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer) {
+        this.jwtTokenizer = jwtTokenizer;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
@@ -29,11 +42,41 @@ public class SecurityConfiguration {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .apply(new CustomFilterConfigurer())
+                .and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()
+                        .antMatchers("/h2/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .antMatchers(HttpMethod.POST, "/members").permitAll()
+                        .antMatchers("/members/**").hasRole("USER")
+                        .antMatchers(HttpMethod.GET, "/postings/**").permitAll()
+                        .antMatchers("/postings/**").hasRole("USER")
+                        .antMatchers("/comments/**").hasRole("USER")
+                        .antMatchers("/tags").permitAll()
+                        .antMatchers("/postingLikes").hasRole("USER")
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
+    }
+
+    public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
+
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+
+            AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
+
+            JwtAuthenticationFilter jwtAuthenticationFilter
+                    = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
+
+            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
+            jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
+
+            builder.addFilter(jwtAuthenticationFilter);
+
+        }
     }
 
     @Bean
