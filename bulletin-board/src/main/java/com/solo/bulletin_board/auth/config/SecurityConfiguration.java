@@ -1,9 +1,13 @@
 package com.solo.bulletin_board.auth.config;
 
 import com.solo.bulletin_board.auth.filter.JwtAuthenticationFilter;
+import com.solo.bulletin_board.auth.filter.JwtVerificationFilter;
+import com.solo.bulletin_board.auth.handler.CustomAccessDeniedHandler;
+import com.solo.bulletin_board.auth.handler.CustomAuthenticationEntryPoint;
 import com.solo.bulletin_board.auth.handler.CustomAuthenticationFailureHandler;
 import com.solo.bulletin_board.auth.handler.CustomAuthenticationSuccessHandler;
 import com.solo.bulletin_board.auth.jwt.JwtTokenizer;
+import com.solo.bulletin_board.auth.utils.CustomAuthorityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,9 +29,11 @@ import java.util.Arrays;
 public class SecurityConfiguration {
 
     private final JwtTokenizer jwtTokenizer;
+    private final CustomAuthorityUtils customAuthorityUtils;
 
-    public SecurityConfiguration(JwtTokenizer jwtTokenizer) {
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer, CustomAuthorityUtils customAuthorityUtils) {
         this.jwtTokenizer = jwtTokenizer;
+        this.customAuthorityUtils = customAuthorityUtils;
     }
 
     @Bean
@@ -42,6 +48,10 @@ public class SecurityConfiguration {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .and()
                 .apply(new CustomFilterConfigurer())
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
@@ -74,7 +84,11 @@ public class SecurityConfiguration {
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
 
-            builder.addFilter(jwtAuthenticationFilter);
+            JwtVerificationFilter jwtVerificationFilter
+                    = new JwtVerificationFilter(jwtTokenizer, customAuthorityUtils);
+
+            builder.addFilter(jwtAuthenticationFilter)
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
 
         }
     }

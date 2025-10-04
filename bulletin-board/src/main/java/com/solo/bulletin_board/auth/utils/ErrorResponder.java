@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class ErrorResponder {
 
-    private static void comment(HttpServletResponse response,
+    private static void common(HttpServletResponse response,
                                 HttpStatus httpStatus,
                                 ErrorResponse errorResponse) throws IOException{
 
@@ -25,6 +25,24 @@ public class ErrorResponder {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatusAndMessageFromHttpStatus(httpStatus);
 
-        comment(response, httpStatus, errorResponse);
+        common(response, httpStatus, errorResponse);
+    }
+
+    public static void sendJwtSignatureErrorResponse(HttpServletResponse response, HttpStatus httpStatus) throws IOException{
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatusAndMessageFromHttpStatusAndMessage(
+                httpStatus, "Signature of accessToken is not valid");
+
+        common(response, httpStatus, errorResponse);
+    }
+
+    public static void sendExpiredJwtErrorResponse(HttpServletResponse response, HttpStatus httpStatus) throws IOException{
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatusAndMessageFromHttpStatusAndMessage(
+                httpStatus, "AccessToken expired");
+
+        common(response, httpStatus, errorResponse);
     }
 }
