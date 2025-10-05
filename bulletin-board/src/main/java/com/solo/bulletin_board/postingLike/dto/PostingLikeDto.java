@@ -12,8 +12,6 @@ public class PostingLikeDto {
     @Setter
     public static class Post{
         @Positive
-        private long memberId;
-        @Positive
         private long postingId;
     }
 

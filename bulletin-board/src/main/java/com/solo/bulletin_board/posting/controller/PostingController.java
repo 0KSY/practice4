@@ -1,5 +1,6 @@
 package com.solo.bulletin_board.posting.controller;
 
+import com.solo.bulletin_board.auth.userDetailsService.CustomUserDetails;
 import com.solo.bulletin_board.dto.MultiResponseDto;
 import com.solo.bulletin_board.dto.SingleResponseDto;
 import com.solo.bulletin_board.posting.dto.PostingDto;
@@ -10,6 +11,7 @@ import com.solo.bulletin_board.utils.UriCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,9 +35,10 @@ public class PostingController {
     }
 
     @PostMapping
-    public ResponseEntity postPosting(@RequestBody @Valid PostingDto.Post postingPostDto){
+    public ResponseEntity postPosting(@RequestBody @Valid PostingDto.Post postingPostDto,
+                                      @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
-        Posting posting = postingService.createPosting(mapper.postingPostDtoToPosting(postingPostDto));
+        Posting posting = postingService.createPosting(mapper.postingPostDtoToPosting(postingPostDto), customUserDetails);
         URI location = UriCreator.createUri(POSTING_DEFAULT_URI, posting.getPostingId());
 
         return ResponseEntity.created(location)
@@ -44,11 +47,12 @@ public class PostingController {
 
     @PatchMapping("/{posting-id}")
     public ResponseEntity patchPosting(@PathVariable("posting-id") @Positive long postingId,
-                                       @RequestBody @Valid PostingDto.Patch postingPatchDto){
+                                       @RequestBody @Valid PostingDto.Patch postingPatchDto,
+                                       @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
         postingPatchDto.setPostingId(postingId);
 
-        Posting posting = postingService.updatePosting(mapper.postingPatchDtoToPosting(postingPatchDto));
+        Posting posting = postingService.updatePosting(mapper.postingPatchDtoToPosting(postingPatchDto), customUserDetails);
 
         return new ResponseEntity(new SingleResponseDto<>(mapper.postingToPostingResponseDto(posting)), HttpStatus.OK);
 
@@ -74,9 +78,10 @@ public class PostingController {
     }
 
     @DeleteMapping("/{posting-id}")
-    public ResponseEntity deletePosting(@PathVariable("posting-id") @Positive long postingId){
+    public ResponseEntity deletePosting(@PathVariable("posting-id") @Positive long postingId,
+                                        @AuthenticationPrincipal CustomUserDetails customUserDetails){
 
-        postingService.deletePosting(postingId);
+        postingService.deletePosting(postingId, customUserDetails);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

@@ -19,8 +19,6 @@ public class PostingDto {
     @Getter
     @Setter
     public static class Post{
-        @Positive
-        private long memberId;
         @NotBlank
         private String title;
         @NotBlank

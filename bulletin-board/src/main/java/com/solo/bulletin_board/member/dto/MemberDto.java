@@ -22,8 +22,14 @@ public class MemberDto {
     @Getter
     @Setter
     public static class Patch{
-        private long memberId;
         private String nickname;
+    }
+
+    @Getter
+    @Setter
+    public static class Password{
+        @NotBlank
+        private String password;
     }
 
     @Getter

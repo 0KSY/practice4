@@ -12,14 +12,11 @@ public interface CommentMapper {
 
     default Comment commentPostDtoToComment(CommentDto.Post commentPostDto){
 
-        Member member = new Member();
-        member.setMemberId(commentPostDto.getMemberId());
         Posting posting = new Posting();
         posting.setPostingId(commentPostDto.getPostingId());
 
         Comment comment = new Comment();
         comment.setContent(commentPostDto.getContent());
-        comment.setMember(member);
         comment.setPosting(posting);
 
         if(commentPostDto.getParentCommentId() != 0){
