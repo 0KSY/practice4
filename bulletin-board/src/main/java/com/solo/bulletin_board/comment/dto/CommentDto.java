@@ -16,8 +16,6 @@ public class CommentDto {
     @Setter
     public static class Post{
         @Positive
-        private long memberId;
-        @Positive
         private long postingId;
         @NotBlank
         private String content;

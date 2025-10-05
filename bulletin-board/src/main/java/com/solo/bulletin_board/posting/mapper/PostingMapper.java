@@ -18,14 +18,10 @@ public interface PostingMapper {
 
     default Posting postingPostDtoToPosting(PostingDto.Post postingPostDto){
 
-        Member member = new Member();
-        member.setMemberId(postingPostDto.getMemberId());
-
         Posting posting = new Posting();
         posting.setTitle(postingPostDto.getTitle());
         posting.setContent(postingPostDto.getContent());
         posting.setViewCount(0);
-        posting.setMember(member);
 
         if(postingPostDto.getPostingTagDtos() != null){
 

@@ -11,14 +11,10 @@ public interface PostingLikeMapper {
 
     default PostingLike postingLikePostDtoToPostingLike(PostingLikeDto.Post postingLikePostDto){
 
-        Member member = new Member();
-        member.setMemberId(postingLikePostDto.getMemberId());
-
         Posting posting = new Posting();
         posting.setPostingId(postingLikePostDto.getPostingId());
 
         PostingLike postingLike = new PostingLike();
-        postingLike.setMember(member);
         postingLike.setPosting(posting);
 
         return postingLike;
