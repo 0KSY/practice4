@@ -42,7 +42,12 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
 
         if(optionalMember.isPresent()){
-            throw new BusinessLogicException(ExceptionCode.MEMBER_EXISTS);
+            if(optionalMember.get().getSignupType() == Member.SignupType.SERVER){
+                throw new BusinessLogicException(ExceptionCode.MEMBER_SERVER_USER);
+            }
+            else{
+                throw new BusinessLogicException(ExceptionCode.MEMBER_GOOGLE_OAUTH2_USER);
+            }
         }
     }
 
@@ -65,6 +70,8 @@ public class MemberService {
 
         verifyExistsMember(member.getEmail());
         verifyExistsNickname(member.getNickname());
+
+        member.setSignupType(Member.SignupType.SERVER);
 
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encryptedPassword);

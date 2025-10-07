@@ -40,4 +40,12 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<PostingLike> postingLikes = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private SignupType signupType;
+
+    public enum SignupType{
+        SERVER,
+        GOOGLE_OAUTH2;
+    }
 }
