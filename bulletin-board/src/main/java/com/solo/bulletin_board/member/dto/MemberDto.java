@@ -39,6 +39,15 @@ public class MemberDto {
         private long memberId;
         private String email;
         private String nickname;
+        private String image;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ImageResponse{
+        private long memberId;
+        private String image;
     }
 
     @Getter

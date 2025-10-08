@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.validation.ConstraintViolationException;
 
@@ -36,6 +37,16 @@ public class GlobalExceptionHandle {
         response.setStatusAndMessageFromExceptionCode(e.getExceptionCode());
 
         return new ResponseEntity(response, HttpStatus.valueOf(e.getExceptionCode().getStatus()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e){
+
+        ErrorResponse response = new ErrorResponse();
+        response.setStatusAndMessageFromHttpStatusAndMessage(
+                HttpStatus.BAD_REQUEST, "The file size exceeds the allowed maximum size of 10MB");
+
+        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
