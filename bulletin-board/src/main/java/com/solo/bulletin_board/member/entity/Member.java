@@ -29,6 +29,8 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String nickname;
 
+    private String image;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 

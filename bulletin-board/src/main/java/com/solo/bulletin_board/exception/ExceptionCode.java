@@ -10,7 +10,9 @@ public enum ExceptionCode {
     MEMBER_SERVER_USER(409, "This email is already registered using Server"),
     MEMBER_GOOGLE_OAUTH2_USER(409, "This email is already registered using Google"),
     POSTING_NOT_FOUND(404, "Posting not found"),
-    COMMENT_NOT_FOUND(404, "Comment not found");
+    COMMENT_NOT_FOUND(404, "Comment not found"),
+    FILE_TYPE_NOT_ALLOWED(400, "Type of file not allowed"),
+    FILE_INPUT_STREAM_ERROR(500, "Failed to read image file");
 
     @Getter
     private int status;
